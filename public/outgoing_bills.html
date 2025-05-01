@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outgoing Bills</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2B4162;
+            --primary-dark: #1B2A3F;
+            --primary-light: #E9EDF2;
+            --accent-color: #7754C4;
+            --secondary-color: #4A4E69;
+            --success-color: #385273;
+            --danger-color: #9A031E;
+            --background-color: #F5F6F8;
+            --card-background: #FFFFFF;
+            --border-color: #E2E3E7;
+            --text-dark: #2B2D42;
+            --text-light: #8D99AE;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.8rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.4rem;
+            font-weight: 500;
+            padding-left: 1rem;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            margin-right: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .navbar .nav-item {
+            margin: 0 0.2rem;
+        }
+
+        .navbar .nav-link {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            opacity: 0.85;
+            transition: all 0.2s ease;
+            color: white;
+        }
+
+        .navbar .nav-link:hover {
+            opacity: 1;
+        }
+
+        .navbar .nav-link.active {
+            background-color: var(--accent-color);
+            border-radius: 4px;
+            opacity: 1;
+            font-weight: 500;
+        }
+
+        .navbar .nav-link i {
+            margin-right: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px 8px 0 0 !important;
+            border-left: 4px solid var(--accent-color);
+            padding: 16px 24px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.875rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid var(--border-color);
+            color: var(--text-dark);
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(119, 84, 196, 0.1);
+        }
+
+        .table {
+            margin-bottom: 0;
+            font-size: 0.875rem;
+        }
+
+        .table th {
+            background-color: var(--primary-light);
+            color: var(--text-dark);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 8px;
+        }
+
+        .table td {
+            padding: 12px 8px;
+            vertical-align: middle;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 500;
+            padding: 8px 16px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .summary-card {
+            background-color: var(--primary-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-title {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .summary-label {
+            color: var(--text-dark);
+        }
+
+        .summary-value {
+            color: var(--text-dark);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin: 24px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+            font-size: 1rem;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar-brand {
+                border-right: none;
+                margin-right: 0;
+            }
+            .navbar .nav-item {
+                margin: 0.2rem 0;
+            }
+            .navbar .nav-link {
+                padding: 0.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-calculator"></i>
+                ACC
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-home"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/party_master">
+                            <i class="fas fa-users"></i>
+                            Parties
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/product_master">
+                            <i class="fas fa-box"></i>
+                            Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/incoming_bills">
+                            <i class="fas fa-file-invoice"></i>
+                            Bills In
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/outgoing_bills">
+                            <i class="fas fa-file-export"></i>
+                            Bills Out
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/view_bills">
+                            <i class="fas fa-list"></i>
+                            View Bills
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts">
+                            <i class="fas fa-book"></i>
+                            Accounts
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-file-export me-2"></i>Add New Outgoing Bill</h5>
+            </div>
+            <div class="card-body">
+                <form id="billForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bill_no" class="form-label">Bill Number</label>
+                            <input type="text" class="form-control" id="bill_no" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="party_id" class="form-label">Party</label>
+                            <select class="form-select" id="party_id" required>
+                                <option value="">Select Party</option>
+                            </select>
+                            <small class="text-muted mt-1 d-block" id="partyGstNo"></small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="account_id" class="form-label">Account Type</label>
+                            <select class="form-select" id="account_id" required>
+                                <option value="">Select Type</option>
+                                <option value="Bank">Bank</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Colour Chemical">Colour Chemical</option>
+                                <option value="Process">Process</option>
+                                <option value="Coal & Fuel">Coal & Fuel</option>
+                                <option value="Credit">Credit</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="bill_date" class="form-label">Bill Date</label>
+                            <input type="date" class="form-control" id="bill_date" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tds_percent" class="form-label">TDS Percent</label>
+                            <input type="number" class="form-control" id="tds_percent" step="0.01" value="0" disabled>
+                        </div>
+                    </div>
+
+                    <h5 class="section-title">Bill Items</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%">Product</th>
+                                    <th style="width: 10%">Quantity</th>
+                                    <th style="width: 10%">Rate</th>
+                                    <th style="width: 10%">GST %</th>
+                                    <th style="width: 10%">Sub Total</th>
+                                    <th style="width: 10%">SGST</th>
+                                    <th style="width: 10%">CGST</th>
+                                    <th style="width: 10%">Total</th>
+                                    <th style="width: 5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTableBody">
+                                <tr>
+                                    <td>
+                                        <select class="form-select product-id" required>
+                                            <option value="">Select Product</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" class="form-control qty" step="0.01" required></td>
+                                    <td><input type="number" class="form-control rate" step="0.01" required></td>
+                                    <td><input type="number" class="form-control gst-percent" step="0.01" required></td>
+                                    <td><input type="number" class="form-control sub-total" readonly></td>
+                                    <td><input type="number" class="form-control sgst" readonly></td>
+                                    <td><input type="number" class="form-control cgst" readonly></td>
+                                    <td><input type="number" class="form-control total" readonly></td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove-row">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="9" class="text-end">
+                                        <button type="button" class="btn btn-success" id="addItem">
+                                            <i class="fas fa-plus me-1"></i> Add Item
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="summary-card">
+                        <h6 class="summary-title">Bill Summary</h6>
+                        <div class="summary-row">
+                            <span class="summary-label">Sub Total:</span>
+                            <span class="summary-value" id="subTotal">0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">GST Total:</span>
+                            <span class="summary-value" id="gstTotal">0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">TDS Amount:</span>
+                            <span class="summary-value" id="tdsAmount">0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Final Amount:</span>
+                            <span class="summary-value" id="finalAmount">0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save Bill
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to load parties
+        async function loadParties() {
+            try {
+                const response = await fetch('/api/data');
+                const parties = await response.json();
+                const partySelect = document.getElementById('party_id');
+                
+                parties.forEach(party => {
+                    const option = document.createElement('option');
+                    option.value = party[0]; // S.No
+                    option.textContent = `${party[1]} (${party[2]})`; // Name and GST No
+                    option.dataset.gstNo = party[2]; // Store GST No in dataset
+                    partySelect.appendChild(option);
+                });
+
+                // Add event listener for party selection
+                partySelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    document.getElementById('partyGstNo').textContent = selectedOption.dataset.gstNo || '';
+                });
+            } catch (error) {
+                console.error('Error loading parties:', error);
+            }
+        }
+
+        // Function to load products
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/product-data');
+                const products = await response.json();
+                const productSelects = document.querySelectorAll('.product-id');
+                
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product[0]; // S.No
+                    option.textContent = product[1]; // Only product name
+                    option.dataset.hsnCode = product[2]; // Store HSN Code in dataset
+                    
+                    // Add to all product selects
+                    productSelects.forEach(select => {
+                        select.appendChild(option.cloneNode(true));
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Function to add new item row
+        function addNewItemRow() {
+            const newRow = document.querySelector('#itemsTableBody tr').cloneNode(true);
+            newRow.querySelectorAll('input').forEach(input => input.value = '');
+            newRow.querySelector('.product-id').innerHTML = '<option value="">Select Product</option>';
+            
+            // Clone product options
+            const originalSelect = document.querySelector('.product-id');
+            const newSelect = newRow.querySelector('.product-id');
+            Array.from(originalSelect.options).forEach(option => {
+                if (option.value) { // Skip the "Select Product" option
+                    newSelect.appendChild(option.cloneNode(true));
+                }
+            });
+            
+            document.getElementById('itemsTableBody').appendChild(newRow);
+        }
+
+        // Add event listener for add item button
+        document.getElementById('addItem').addEventListener('click', addNewItemRow);
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadParties();
+            loadProducts();
+        });
+
+        // Function to calculate row totals
+        function calculateRowTotals(row) {
+            const qty = parseFloat(row.querySelector('.qty').value) || 0;
+            const rate = parseFloat(row.querySelector('.rate').value) || 0;
+            const gstPercent = parseFloat(row.querySelector('.gst-percent').value) || 0;
+            
+            const subTotal = qty * rate;
+            const sgst = (subTotal * gstPercent) / 200; // Divided by 200 because 18% GST = 9% SGST + 9% CGST
+            const cgst = sgst;
+            const total = subTotal + sgst + cgst;
+            
+            row.querySelector('.sub-total').value = subTotal.toFixed(2);
+            row.querySelector('.sgst').value = sgst.toFixed(2);
+            row.querySelector('.cgst').value = cgst.toFixed(2);
+            row.querySelector('.total').value = total.toFixed(2);
+            
+            calculateBillTotals();
+        }
+
+        // Function to calculate bill totals
+        function calculateBillTotals() {
+            let subTotal = 0;
+            let gstTotal = 0;
+            const rows = document.querySelectorAll('#itemsTableBody tr');
+            
+            rows.forEach(row => {
+                subTotal += parseFloat(row.querySelector('.total').value) || 0;
+                gstTotal += (parseFloat(row.querySelector('.sgst').value) || 0) + (parseFloat(row.querySelector('.cgst').value) || 0);
+            });
+            
+            const tdsPercent = parseFloat(document.getElementById('tds_percent').value) || 0;
+            const tdsAmount = (subTotal * tdsPercent) / 100;
+            const finalAmount = subTotal - tdsAmount;
+            
+            document.getElementById('subTotal').textContent = subTotal.toFixed(2);
+            document.getElementById('gstTotal').textContent = gstTotal.toFixed(2);
+            document.getElementById('tdsAmount').textContent = tdsAmount.toFixed(2);
+            document.getElementById('finalAmount').textContent = finalAmount.toFixed(2);
+        }
+
+        // Add event listeners for calculations
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('.qty, .rate, .gst-percent')) {
+                calculateRowTotals(e.target.closest('tr'));
+            } else if (e.target.matches('#tds_percent')) {
+                calculateBillTotals();
+            }
+        });
+
+        // Remove item row
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.remove-row')) {
+                const row = e.target.closest('tr');
+                if (document.querySelectorAll('#itemsTableBody tr').length > 1) {
+                    row.remove();
+                    calculateBillTotals();
+                }
+            }
+        });
+
+        // Add event listener for account type change
+        document.getElementById('account_id').addEventListener('change', function() {
+            const tdsInput = document.getElementById('tds_percent');
+            if (this.value === 'Process') {
+                tdsInput.disabled = false;
+                tdsInput.value = '1'; // Default TDS percent for Process
+            } else {
+                tdsInput.disabled = true;
+                tdsInput.value = '0';
+            }
+            calculateBillTotals(); // Recalculate totals when TDS changes
+        });
+
+        // Handle form submission
+        document.getElementById('billForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const billData = {
+                bill_no: document.getElementById('bill_no').value,
+                party_id: document.getElementById('party_id').value,
+                account_id: document.getElementById('account_id').value,
+                bill_date: document.getElementById('bill_date').value,
+                tds_percent: parseFloat(document.getElementById('tds_percent').value) || 0,
+                tds_amount: parseFloat(document.getElementById('tdsAmount').textContent) || 0,
+                final_amount: parseFloat(document.getElementById('finalAmount').textContent) || 0,
+                items: []
+            };
+
+            // Collect items data
+            document.querySelectorAll('#itemsTableBody tr').forEach(row => {
+                billData.items.push({
+                    product_id: row.querySelector('.product-id').value,
+                    qty: parseFloat(row.querySelector('.qty').value),
+                    rate: parseFloat(row.querySelector('.rate').value),
+                    gst_percent: parseFloat(row.querySelector('.gst-percent').value),
+                    sub_total: parseFloat(row.querySelector('.sub-total').value),
+                    sgst_amount: parseFloat(row.querySelector('.sgst').value),
+                    cgst_amount: parseFloat(row.querySelector('.cgst').value),
+                    total_amount: parseFloat(row.querySelector('.total').value)
+                });
+            });
+
+            try {
+                const response = await fetch('/api/outgoing-bills', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(billData)
+                });
+
+                if (response.ok) {
+                    alert('Bill saved successfully!');
+                    // Clear form
+                    document.getElementById('billForm').reset();
+                    // Reset items table to one row
+                    const tbody = document.getElementById('itemsTableBody');
+                    tbody.innerHTML = '';
+                    tbody.appendChild(document.querySelector('#itemsTableBody tr').cloneNode(true));
+                    // Reset totals
+                    calculateBillTotals();
+                } else {
+                    alert('Error saving bill');
+                    console.error('Error saving bill');
+                }
+            } catch (error) {
+                alert('Error saving bill');
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html> 
